@@ -1,2 +1,2 @@
 # nextalk.webim
-NexTalk web IM javascrip SDK
+NexTalk web IM javascript SDK
