@@ -1,2 +1,2 @@
 # songm.webim
-松美Web客户端即时聊天SDK（Songm web IM javascript SDK）
+松美即时聊天Web客户端SDK（Songm Web IM javascript SDK）
