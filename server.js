@@ -1,6 +1,10 @@
 /*!
+ * 
+ * server.js
+ * 
  * @auth zhangsong
- * @date 2016年3月24日
+ * @date 2016-3-24
+ * 
  */
 var http = require('http');
 var path = require('path');

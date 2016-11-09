@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Test</title>
+<script type="text/javascript">
+var ws = new WebSocket('ws://127.0.0.1:8090/im');
+ws.onopen = function() {
+    console.log("Connection Succeed!!!")
+};
+ws.onmessage = function(ev) {
+    console.log(ev);
+};
+ws.onclose = function() {
+    console.log("Connection Failure!!!");
+};
+</script>
+<style type="text/css">
+
+</style>
+</head>
+<body>
+
+</body>
+</html>
