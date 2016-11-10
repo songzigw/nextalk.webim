@@ -12,6 +12,16 @@
 
     webim.version = '0.1';
     
+    /** 操作项 */
+    webim.operation = {
+        // 连接授权
+        CONN_AUTH: 1,
+        // 发送聊天消息
+        MESSAGE: 3,
+        // 服务端发送数据到客户端
+        MSG_SEND: 4
+    };
+    
 })((function() {
     if (!window.songm) {
         window.songm = {};
