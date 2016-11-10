@@ -82,20 +82,20 @@
                 var pro = JSON.parse(ev.data);
                 var body = pro.body;
                 switch (pro.op) {
-                    case webim.operation.CONN_AUTH:
-                        if (!body.succeed) {
-                            ws.close();
-                        } else {
-                            _this.trigger('connected', [ body.data ]);
-                        }
-                        break;
-                    case webim.operation.MSG_SEND:
-                        _this.trigger('message', [ body.data ]);
-                        break;
-                    default:
-                        _this.targger('response' + pro.seq, [ body ]);
-                        _this.unbind('response' + pro.seq);
-                        break;
+                case webim.operation.CONN_AUTH:
+                    if (!body.succeed) {
+                        ws.close();
+                    } else {
+                        _this.trigger('connected', [ body.data ]);
+                    }
+                    break;
+                case webim.operation.MSG_SEND:
+                    _this.trigger('message', [ body.data ]);
+                    break;
+                default:
+                    _this.targger('response' + pro.seq, [ body ]);
+                    _this.unbind('response' + pro.seq);
+                    break;
                 }
             };
             return ws;

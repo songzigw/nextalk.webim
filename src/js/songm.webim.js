@@ -22,6 +22,28 @@
         MSG_SEND: 4
     };
     
+    function Protocol() {
+        this.ver = 1;
+        this.seq = null;
+        this.op = null;
+        this.body = null;
+    }
+    
+    function Session() {
+        this.sesId = null;
+        this.tokenId = null;
+        this.uid = null;
+        this.chId = null;
+    }
+    
+    function Message() {
+        
+    }
+    
+    function Conversation() {
+        
+    }
+    
 })((function() {
     if (!window.songm) {
         window.songm = {};
