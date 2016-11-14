@@ -104,6 +104,8 @@
             body   : {type : 'string', requisite : true}
         });
         
+        // 会话类型
+        this.conv = undefined;
         this.type = ops.type;
         this.from = ops.from;
         this.fNick = ops.fNick;

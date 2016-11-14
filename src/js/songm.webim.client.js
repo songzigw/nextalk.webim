@@ -108,7 +108,7 @@
         _this._initTimerTask();
         return _this;
     };
-    Client.prototype.getConv(type, sub, obj) {
+    Client.prototype.getConv = function(type, sub, obj) {
         var _t = this;
         for (var i = 0; i < _t.convList.length; i++) {
             if (_t[i].type == type
@@ -119,9 +119,8 @@
         }
         return null;
     };
-    Client.prototype.setCove(conv) {
-        if (getConv(conv.type,
-                conv.subject,
+    Client.prototype.setCove = function(conv) {
+        if (getConv(conv.type, conv.subject,
                 conv.objectum)) {
             return;
         }

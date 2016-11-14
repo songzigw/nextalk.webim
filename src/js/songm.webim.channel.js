@@ -213,7 +213,7 @@
     /**
      * XMLHttpRequest轮询
      */
-    var Coment = function(url, session) {
+    var Comet = function(url, session) {
         var _t = this;
         _t.URL = url;
         _t.session = new webim.Session(session);
@@ -244,7 +244,7 @@
         },
         _startPolling: function() {
             var _t = this;
-            var (!_t._connecting) {
+            if (!_t._connecting) {
                 return;
             }
             // 开始轮询
