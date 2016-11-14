@@ -11,6 +11,17 @@
     "use strict";
 
     util.version = '0.1';
+
+    var _toStr = Object.prototype.toString;
+    function isFunction(obj) {
+        return obj && _toStr.call(obj) === "[object Function]";
+    }
+    function isArray(obj) {
+        return obj && _toStr.call(obj) === "[object Array]";
+    }
+    function isObject(obj) {
+        return obj && _toStr.call(obj) === "[object Object]";
+    }
     
     Date.prototype.format = function(format) {
         var o = {

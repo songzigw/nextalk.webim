@@ -212,7 +212,7 @@
         // 触发正在连接服务事件
         _this.trigger("connecting", [ _this.session ]);
         // 创建通信管道
-        _this.channel = new Channel({wsocket: options.wsocket,
+        _this.channel = new webim.Channel({wsocket: options.wsocket,
                                      server: options.server,
                                      tokenId: options.token,
                                      sessionId: options.session,

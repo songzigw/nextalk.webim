@@ -73,7 +73,7 @@
             this.options = songm.util.extend({}, Channel.DEFAULTS, options);
             this.type = this.options.type;
             this.status = Channel.DISCONNECTED;
-            this.session = new Session({
+            this.session = new webim.Session({
                 tokenId: options.tokenId,
                 sessionId: options.sessionId
             });
@@ -81,7 +81,7 @@
 
         _newSocket : function() {
             var _this = this, ops = _this.options;
-            _this.ws = new WebSocket(ops.wsocket + '\im');
+            _this.ws = new WebSocket(ops.wsocket + '/im');
 
             _this.ws.onopen = function(ev) {
                 // 连接授权
@@ -140,7 +140,7 @@
         /** 发起连接 */
         connect : function() {
             var _this = this;
-            if (_this.status == Channe.CONNECTING) {
+            if (_this.status == Channel.CONNECTING) {
                 return;
             }
             var ops = _this.options;
