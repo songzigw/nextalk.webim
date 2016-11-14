@@ -11,6 +11,17 @@
     "use strict";
 
     var Channel = function(options) {
+        // 入参验证
+        songm.util.validate(options, {
+            wsocket  : {type : 'string', requisite : true},
+            server   : {type : 'string', requisite : true},
+            tokenId  : {type : 'string', requisite : true},
+            type     : {type : [Channel.type.XHR_POLLING,
+                              Channel.type.WEBSOCKET],
+                        requisite : false},
+            sessionId: {type : 'string', requisite : false}
+        });
+        
         var _this = this;
 
         _this._init(options);
@@ -22,19 +33,20 @@
         // 当有消息时触发
         _this.onMessage = null;
 
-        _this.bind("connected", function(ev, data) {
+        _this.bind('connected', function(ev, data) {
             _this.status = Channel.CONNECTED;
+            _this.session = new webim.Session(data);
             if (_this.onConnected) {
                 _this.onConnected(ev, data);
             }
         });
-        _this.bind("disconnected", function(ev, data) {
+        _this.bind('disconnected', function(ev, data) {
             _this.status = Channel.DISCONNECTED;
             if (_this.onDisconnected) {
                 _this.onDisconnected(ev, data);
             }
         });
-        _this.bind("message", function(ev, data) {
+        _this.bind('message', function(ev, data) {
             if (_this.onMessage) {
                 _this.onMessage(ev, data);
             }
@@ -57,28 +69,31 @@
     };
 
     Channel.prototype = {
-        type : Channel.DEFAULTS.type,
-        status : Channel.DISCONNECTED,
-
         _init : function(options) {
-            this.options = extend({}, Channel.DEFAULTS, options || {});
+            this.options = extend({}, Channel.DEFAULTS, options);
             this.type = this.options.type;
             this.status = Channel.DISCONNECTED;
+            this.session = new Session({
+                tokenId: options.tokenId,
+                sessionId: options.sessionId
+            });
         },
 
         _newSocket : function() {
-            var _this = this;
-            var ops = _this.options;
-            var ws = _this.ws = new WebSocket(ops.websocket);
+            var _this = this, ops = _this.options;
+            _this.ws = new WebSocket(ops.wsocket + '\im');
 
-            ws.onopen = function(ev) {
+            _this.ws.onopen = function(ev) {
                 // 连接授权
-                ws.send({});
+                ws.send(new webim.Protocol({
+                    op: webim.operation.CONN_AUTH,
+                    body: _this.session
+                }));
             };
-            ws.onclose = function(ev) {
+            _this.ws.onclose = function(ev) {
                 _this.trigger('disconnected', [ ev.data ]);
             };
-            ws.onmessage = function(ev) {
+            _this.ws.onmessage = function(ev) {
                 var pro = JSON.parse(ev.data);
                 var body = pro.body;
                 switch (pro.op) {
@@ -98,29 +113,28 @@
                     break;
                 }
             };
-            return ws;
+            return _this.ws;
         },
 
         _newComet : function() {
-            var _this = this;
-            var ops = _this.options;
+            var _this = this, ops = _this.options;
 
-            var comet = _this.comet = new Comet(ops.server, ops.token);
+            _this.comet = new Comet(ops.server + '/polling/long', _this.session);
             // 注册长连接的事件监听器
-            comet.bind("open", function(ev, session) {
-                _this.trigger("connected", [ session ]);
+            _this.comet.bind('open', function(ev, data) {
+                _this.trigger("connected", [ data ]);
             });
-            comet.bind("close", function(ev, error) {
-                _this.trigger('disconnected', [ error ]);
+            _this.comet.bind('close', function(ev, data) {
+                _this.trigger('disconnected', [ data ]);
             });
-            comet.bind("message", function(ev, message) {
-                if (message) {
-                    _this.trigger('message', [ message ]);
+            _this.comet.bind('message', function(ev, data) {
+                if (data) {
+                    _this.trigger('message', [ data ]);
                 }
             });
             // 发起连接
-            comet.connect();
-            return comet;
+            _this.comet.connect();
+            return _this.comet;
         },
 
         /** 发起连接 */
@@ -157,14 +171,36 @@
         },
 
         /** 发送消息 */
-        sendMessage : function(msg) {
+        sendMessage : function(pro, callback) {
             var _this = this;
 
             if (_this.type == Channel.type.WEBSOCKET) {
-                _this.ws.send(msg);
+                _this.bind('response' + pro.seq, function(ev, ret) {
+                    if (ret.succeed) {
+                        if (!ret.data) {
+                            ret.data = {};
+                        }
+                        callback(ret.data, undefined);
+                    } else {
+                        callback(undefined, msg);
+                    }
+                });
+                try {
+                    _this.ws.send(msg);
+                } catch (e) {
+                    _this.unbind('response' + pro.seq);
+                    callback(undefined, webim.error.NETWORK);
+                }
             }
             if (_this.type == Channel.type.XHR_POLLING) {
-                _this.comet.send(msg);
+                var api = webim.WebAPI.getInstance();
+                switch (pro.op) {
+                case webim.operation.MESSAGE:
+                    api.message(params, callback);
+                    break;
+                default:
+                    break;
+                }
             }
         }
     };
@@ -176,11 +212,7 @@
     var Coment = function(url, session) {
         var _t = this;
         _t.URL = url;
-        if (typeof session === 'object') {
-            _t.session = session;
-        } else if (typeof session === 'string') {
-            _t.session = {tokenId: sessioin}
-        }
+        _t.session = new webim.Session(session);
         _t._setting();
     };
     // The connection has not yet been established.
@@ -220,7 +252,7 @@
                 url: _t.URL + (/\?/.test(_t.URL) ? "&" : "?") + 
                     songm.ajax.param({
                         token : _t.session.tokenId,
-                        session: _t.session.sesId,
+                        session: _t.session.sessionId,
                         chId : _t.session.chId
                     }),
                 cache: false,
@@ -303,10 +335,11 @@
             _t.readyState = Comet.OPEN;
             _t.session = {
                 tokenId: ses.tokenId,
-                sesId: ses.sessionId,
-                chId: ses.attribute.ch_id
+                sessionId: ses.sessionId,
+                chId: ses.attribute.ch_id,
+                uid: ses.uid
             };
-            _t.trigger('open', [ session ]);
+            _t.trigger('open', [ ses ]);
         },
         _onClose: function(error) {
             var _t = this;
@@ -323,7 +356,6 @@
     songm.util.ClassEvent.on(Comet);
 
     webim.Channel = Channel;
-    webim.load = true;
 })((function() {
     if (!window.songm) {
         window.songm = {};

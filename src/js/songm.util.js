@@ -453,6 +453,28 @@
         }
     };
     
+
+    function HTMLEnCode(str) {
+        var s = "";
+        if (str.length == 0)
+            return "";
+        s = str.replace(/&/g, "&amp;");
+        s = s.replace(/</g, "&lt;");
+        s = s.replace(/>/g, "&gt;");
+        s = s.replace(/ /g, "&nbsp;");
+        s = s.replace(/\'/g, "&#39;");
+        s = s.replace(/\"/g, "&quot;");
+        s = s.replace(/\n/g, "<br />");
+        return s;
+    }
+    function isUrl(str) {
+        return /^http:\/\/[A-Za-z0-9]+\.[A-Za-z0-9]+[\/=\?%\-&_~`@[\]\':+!]*([^<>\"])*$/.test(str);
+    }
+    function stripHTML(str) {
+        return str ? str.replace(/<(?:.|\s)*?>/g, "") : "";
+    }
+
+    
     extend(util, {
         extend     : extend,
         nowMillis  : nowMillis,
@@ -467,7 +489,10 @@
         validate   : validate,
         format     : format,
         ClassEvent : ClassEvent,
-        cookie     : cookie
+        cookie     : cookie,
+        HTMLEnCode : HTMLEnCode,
+        isUrl      : isUrl,
+        stripHTML  : stripHTML
     });
     
 })((function() {

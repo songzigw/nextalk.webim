@@ -55,7 +55,14 @@
             context: options.context,
             success: function(ret) {
                 if (typeof callback == "function") {
-                    callback(ret, undefined);
+                    if (ret.succeed) {
+                        if (!ret.data) {
+                            ret.data = {};
+                        }
+                        callback(ret.data, undefined);
+                    } else {
+                        callback(undefined, ret);
+                    }
                 }
                 // WebAPI成功返回结果后回调
                 if (typeof options.callback == "function") {
@@ -64,7 +71,7 @@
             },
             error: function(err) {
                 if (typeof callback == "function") {
-                    callback(undefined, err);
+                    callback(undefined, webim.error.NETWORK);
                 }
             }
         };
@@ -80,7 +87,6 @@
     songm.util.extend(WebAPI.prototype, methods);
 
     webim.WebAPI = WebAPI;
-    webim.load = true;
 })((function() {
     if (!window.songm) {
         window.songm = {};
