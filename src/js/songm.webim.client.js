@@ -65,14 +65,14 @@
             token       : {type : 'string', requisite : true},
             wsocket     : {type : 'string', requisite : true},
             server      : {type : 'string', requisite : true},
-            channelType : {type : [Channel.type.XHR_POLLING,
-                                   Channel.type.WEBSOCKET],
+            channelType : {type : [webim.Channel.type.XHR_POLLING,
+                                   webim.Channel.type.WEBSOCKET],
                            requisite : false},
             session     : {type : 'string', requisite : false}
         });
         
         var _this = this;
-        _this.options = extend({},
+        _this.options = songm.util.extend({},
                 Client.DEFAULTS, options || {});
 
         // 初始化Web业务服务API
@@ -131,14 +131,14 @@
      * 设置连接状态监听器
      */
     Client.prototype.setConnStatusListener = function(listener) {
-        extend(this.connStatusListener, listener || {});
+        songm.util.extend(this.connStatusListener, listener || {});
     };
 
     /**
      * 设置消息接收监听器
      */
     Client.prototype.setReceiveMsgListener = function(listener) {
-        extend(this.receiveMsgListener, listener || {});
+        songm.util.extend(this.receiveMsgListener, listener || {});
     };
     
     /** 绑定客户端存在的各种事件监听 */

@@ -70,7 +70,7 @@
 
     Channel.prototype = {
         _init : function(options) {
-            this.options = extend({}, Channel.DEFAULTS, options);
+            this.options = songm.util.extend({}, Channel.DEFAULTS, options);
             this.type = this.options.type;
             this.status = Channel.DISCONNECTED;
             this.session = new Session({
