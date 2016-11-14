@@ -24,8 +24,8 @@
     
     /** 各种异常 */
     webim.error = {
-        NETWORK: {errorCode: 'NETWORK', errorDesc: '网路异常'}
-        
+        NETWORK: {errorCode: 'NETWORK', errorDesc: '网路异常'},
+        CONNECT: {errorCode: 'CONNECT', errorDesc: '连接错误'}
     };
     
     /** 连接状态 */

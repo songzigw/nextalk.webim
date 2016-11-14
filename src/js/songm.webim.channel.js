@@ -17,7 +17,7 @@
             server   : {type : 'string', requisite : true},
             tokenId  : {type : 'string', requisite : true},
             type     : {type : [Channel.type.XHR_POLLING,
-                              Channel.type.WEBSOCKET],
+                                Channel.type.WEBSOCKET],
                         requisite : false},
             sessionId: {type : 'string', requisite : false}
         });
@@ -174,6 +174,7 @@
         sendMessage : function(pro, callback) {
             var _this = this;
 
+            pro = new webim.Protocol(pro);
             if (_this.type == Channel.type.WEBSOCKET) {
                 _this.bind('response' + pro.seq, function(ev, ret) {
                     if (ret.succeed) {
@@ -182,21 +183,24 @@
                         }
                         callback(ret.data, undefined);
                     } else {
-                        callback(undefined, msg);
+                        callback(undefined, ret);
                     }
                 });
                 try {
-                    _this.ws.send(msg);
+                    _this.ws.send(pro);
                 } catch (e) {
                     _this.unbind('response' + pro.seq);
                     callback(undefined, webim.error.NETWORK);
                 }
-            }
-            if (_this.type == Channel.type.XHR_POLLING) {
+            } else if (_this.type == Channel.type.XHR_POLLING) {
                 var api = webim.WebAPI.getInstance();
                 switch (pro.op) {
                 case webim.operation.MESSAGE:
-                    api.message(params, callback);
+                    api.message({
+                        session: _this.session.sessionId,
+                        chId   : _this.session.chId,
+                        from   : pro.body.from,
+                        to     : pro.body.to}, callback);
                     break;
                 default:
                     break;
@@ -333,12 +337,10 @@
         _onOpen: function(ses) {
             var _t = this;
             _t.readyState = Comet.OPEN;
-            _t.session = {
-                tokenId: ses.tokenId,
-                sessionId: ses.sessionId,
-                chId: ses.attribute.ch_id,
-                uid: ses.uid
-            };
+            _t.session.tokenId = ses.tokenId;
+            _t.session.sessionId = ses.sessionId;
+            _t.session.chId = ses.attribute.ch_id;
+            _t.session.uid = ses.uid;
             _t.trigger('open', [ ses ]);
         },
         _onClose: function(error) {

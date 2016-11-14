@@ -174,6 +174,9 @@
                 _this.session.tokenId = data.tokenId;
                 _this.session.uid = data.uid;
                 _this.session.chId = data.chId;
+                
+                // ???
+                
                 _this.connStatusListener.onConnected(data);
             }
         });
@@ -188,6 +191,8 @@
         // 接收消息
         _this.bind("message", function(ev, data) {
             console.log("message: " + JSON.stringify(data));
+            
+            // ???
             
             _this.receiveMsgListener.onDialogue(data);
         });
@@ -227,6 +232,26 @@
 
         // 发起管道连接
         _this.channel.connect();
+    };
+    /** 断开服务器 */
+    Client.prototype.disconnectServer = function() {
+        var _t = this;
+        if (_t.channel) {
+            _t.channel.close();
+        }
+    };
+    /** 发送消息 */
+    Client.prototype.sendMessage = function(msg, callback) {
+        var _t = this;
+        if (!_t.channel) {
+            callback(undefined, webim.error.CONNECT);
+            return;
+        }
+        
+        _t.channel.sendMessage(new webim.Protocol({
+            op: webim.operation.MESSAGE,
+            body: msg
+        }), callback);
     };
     
     songm.util.ClassEvent.on(Client);
