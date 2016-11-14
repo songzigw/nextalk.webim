@@ -243,6 +243,8 @@
     /** 发送消息 */
     Client.prototype.sendMessage = function(msg, callback) {
         var _t = this;
+        msg = new webim.Message(msg);
+        
         if (!_t.channel) {
             callback(undefined, webim.error.CONNECT);
             return;
