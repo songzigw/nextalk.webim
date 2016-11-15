@@ -112,7 +112,7 @@
                     _this.trigger('message', [ body.data ]);
                     break;
                 default:
-                    _this.targger('response' + pro.seq, [ body ]);
+                    _this.trigger('response' + pro.seq, [ body ]);
                     _this.unbind('response' + pro.seq);
                     break;
                 }
