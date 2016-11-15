@@ -16,9 +16,9 @@
     webim.operation = {
         // 连接授权
         CONN_AUTH: 1,
-        // 发送聊天消息
+        // 收到服务器端的消息
         MESSAGE: 3,
-        // 服务端发送数据到客户端
+        // 发送消息到服务器端
         MSG_SEND: 4
     };
     
@@ -99,7 +99,7 @@
             fNick  : {type : 'string', requisite : true},
             fAvatar: {type : 'string', requisite : true},
             to     : {type : 'string', requisite : true},
-            toNick : {type : 'string', requisite : true},
+            tNick  : {type : 'string', requisite : true},
             tAvatar: {type : 'string', requisite : true},
             body   : {type : 'string', requisite : true}
         });

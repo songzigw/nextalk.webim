@@ -236,7 +236,7 @@
     Client.prototype.disconnectServer = function() {
         var _t = this;
         if (_t.channel) {
-            _t.channel.close();
+            _t.channel.disconnect();
         }
     };
     /** 发送消息 */
@@ -250,7 +250,7 @@
         }
         
         _t.channel.sendMessage(new webim.Protocol({
-            op: webim.operation.MESSAGE,
+            op: webim.operation.MSG_SEND,
             body: msg
         }), callback);
     };

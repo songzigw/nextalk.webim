@@ -85,10 +85,11 @@
 
             _this.ws.onopen = function(ev) {
                 // 连接授权
-                ws.send(new webim.Protocol({
-                    op: webim.operation.CONN_AUTH,
-                    body: _this.session
-                }));
+                _this.ws.send(JSON.stringify(
+                        new webim.Protocol({
+                            op: webim.operation.CONN_AUTH,
+                            body: _this.session
+                        })));
             };
             _this.ws.onclose = function(ev) {
                 _this.trigger('disconnected', [ ev.data ]);
@@ -99,12 +100,15 @@
                 switch (pro.op) {
                 case webim.operation.CONN_AUTH:
                     if (!body.succeed) {
-                        ws.close();
+                        _this.ws.close();
                     } else {
-                        _this.trigger('connected', [ body.data ]);
+                        var ses = {sessionId: body.data.sessionId,
+                                   tokenId  : body.data.tokenId,
+                                   uid      : body.data.uid}
+                        _this.trigger('connected', [ ses ]);
                     }
                     break;
-                case webim.operation.MSG_SEND:
+                case webim.operation.MESSAGE:
                     _this.trigger('message', [ body.data ]);
                     break;
                 default:
@@ -187,7 +191,7 @@
                     }
                 });
                 try {
-                    _this.ws.send(pro);
+                    _this.ws.send(JSON.stringify(pro));
                 } catch (e) {
                     _this.unbind('response' + pro.seq);
                     callback(undefined, webim.error.NETWORK);
@@ -195,7 +199,7 @@
             } else if (_this.type == Channel.type.XHR_POLLING) {
                 var api = webim.WebAPI.getInstance();
                 switch (pro.op) {
-                case webim.operation.MESSAGE:
+                case webim.operation.MSG_SEND:
                     api.message({
                         session: _this.session.sessionId,
                         chId   : _this.session.chId,
@@ -341,7 +345,7 @@
             _t.session.sessionId = ses.sessionId;
             _t.session.chId = ses.attribute.ch_id;
             _t.session.uid = ses.uid;
-            _t.trigger('open', [ ses ]);
+            _t.trigger('open', [ _t.session ]);
         },
         _onClose: function(error) {
             var _t = this;
