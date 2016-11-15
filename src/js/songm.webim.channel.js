@@ -144,7 +144,7 @@
         /** 发起连接 */
         connect : function() {
             var _this = this;
-            if (_this.status == Channel.CONNECTING) {
+            if (_this.status != Channel.DISCONNECTED) {
                 return;
             }
             var ops = _this.options;
@@ -178,6 +178,10 @@
         sendMessage : function(pro, callback) {
             var _this = this;
 
+            if (_this.status != Channel.CONNECTED) {
+                callback(undefined, webim.error.CONNECT);
+                return;
+            }
             pro = new webim.Protocol(pro);
             if (_this.type == Channel.type.WEBSOCKET) {
                 _this.bind('response' + pro.seq, function(ev, ret) {
@@ -190,12 +194,7 @@
                         callback(undefined, ret);
                     }
                 });
-                try {
-                    _this.ws.send(JSON.stringify(pro));
-                } catch (e) {
-                    _this.unbind('response' + pro.seq);
-                    callback(undefined, webim.error.NETWORK);
-                }
+                _this.ws.send(JSON.stringify(pro));
             } else if (_this.type == Channel.type.XHR_POLLING) {
                 var api = webim.WebAPI.getInstance();
                 switch (pro.op) {
@@ -305,7 +304,7 @@
                 _t._pollingTimes = 0;
             }
             if (_t._failTimes > 1) {
-                _t._onClose({errorCode: 'NETWORK', errorDesc: '网络异常'});
+                _t._onClose(webim.error.NETWORK);
             } else {
                 _t._setPollingTimer();
             }
