@@ -112,7 +112,7 @@
         this.fAvatar = ops.fAvatar;
         this.to = ops.to;
         this.tNick = ops.tNick;
-        this.tAvatar = ops.Avatar;
+        this.tAvatar = ops.tAvatar;
         this.body = ops.body;
     };
     webim.Message.TEXT  = 'TEXT';

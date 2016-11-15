@@ -242,7 +242,6 @@
     /** 发送消息 */
     Client.prototype.sendMessage = function(msg, callback) {
         var _t = this;
-        msg = new webim.Message(msg);
         
         if (!_t.channel) {
             callback(undefined, webim.error.CONNECT);
@@ -251,7 +250,7 @@
         
         _t.channel.sendMessage(new webim.Protocol({
             op: webim.operation.MSG_SEND,
-            body: msg
+            body: new webim.Message(msg)
         }), callback);
     };
     
