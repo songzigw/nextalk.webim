@@ -55,8 +55,6 @@
     webim.Protocol = function(ops) {
         // 入参验证
         songm.util.validate(ops, {
-            ver : {type: 'number', requisite: false},
-            seq : {type: 'number', requisite: false},
             op  : {type: 'number', requisite: true},
             body: {type: 'object', requisite: false}
         });
@@ -65,13 +63,15 @@
                 webim.Protocol.DEFAULTS, ops);
         
         this.ver = ops.ver;
-        this.seq = ops.seq;
+        this.hea = ops.hea;
+        this.seq = songm.util.nowMillis();
         this.op = ops.op;
         this.body = ops.body;
     };
     webim.Protocol.DEFAULTS = {
         ver: 1,
-        seq: songm.util.nowMillis()
+        hea: 20,
+        pac: 20 // ???
     };
     
     webim.Session = function(ops) {
