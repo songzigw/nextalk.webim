@@ -92,6 +92,10 @@
     webim.Message = function(ops) {
         // 入参验证
         songm.util.validate(ops, {
+            conv   : {type : [webim.Conversation.PRIVATE,
+                              webim.Conversation.GROUP,
+                              webim.Conversation.NOTICE],
+                      requisite : true},
             type   : {type : [webim.Message.TEXT,
                               webim.Message.IMAGE],
                       requisite : true},
@@ -105,7 +109,7 @@
         });
         
         // 会话类型
-        this.conv = undefined;
+        this.conv = ops.conv;
         this.type = ops.type;
         this.from = ops.from;
         this.fNick = ops.fNick;

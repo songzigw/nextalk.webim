@@ -23,7 +23,6 @@
             objectum  : {type : 'string', requisite : true},
             objNick   : {type : 'string', requisite : true},
             objAvatar : {type : 'string', requisite : true},
-            timestamp : {type : 'number', requisite : true},
             direction : {type : [webim.direction.SEND,
                                  webim.direction.RECEIVE],
                          requisite : true},
@@ -45,7 +44,7 @@
         this.objAvatar = options.objAvatar;
         
         // 最近一次会话时间
-        this.timestamp = options.timestamp;
+        this.timestamp = songm.util.nowMillis();
         // 最近一次会话方向
         this.direction = options.direction;
         // 最近一次会话内容
@@ -67,7 +66,6 @@
     Conversation.NOTICE = 'notice';
     Conversation.DEFAULTS = {
         type: Conversation.PRIVATE,
-        timestamp: songm.util.nowMillis(),
         direction: webim.direction.SEND
     };
 
