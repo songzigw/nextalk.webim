@@ -37,12 +37,14 @@
             _this.status = Channel.CONNECTED;
             _this.session = new webim.Session(data);
             if (_this.onConnected) {
+                _this.heartbeat.start();
                 _this.onConnected(ev, data);
             }
         });
         _this.bind('disconnected', function(ev, data) {
             _this.status = Channel.DISCONNECTED;
             if (_this.onDisconnected) {
+                _this.heartbeat.stop();
                 _this.onDisconnected(ev, data);
             }
         });
@@ -77,6 +79,24 @@
                 tokenId: options.tokenId,
                 sessionId: options.sessionId
             });
+            
+            var _t = this;
+            // 心跳定时任务
+            this.heartbeat ＝ {
+                _interval: null,
+                start: function() {
+                    this.stop();
+                    this._interval = setInterval(function() {
+                        _this.ws.send(JSON.stringify(
+                            new webim.Protocol({
+                                op: webim.operation.HEARTBEAT
+                            })));
+                    }, 30 * 1000);
+                },
+                stop: function() {
+                    clearInterval(this._interval);
+                }
+            };
         },
 
         _newSocket : function() {
@@ -104,12 +124,15 @@
                     } else {
                         var ses = {sessionId: body.data.sessionId,
                                    tokenId  : body.data.tokenId,
-                                   uid      : body.data.uid}
+                                   uid      : body.data.uid,
+                                   token    : body.data.token}
                         _this.trigger('connected', [ ses ]);
                     }
                     break;
                 case webim.operation.MESSAGE:
                     _this.trigger('message', [ body.data ]);
+                    break;
+                case webim.operation.HEARTBEAT:
                     break;
                 default:
                     _this.trigger('response' + pro.seq, [ body ]);
@@ -344,6 +367,7 @@
             _t.session.sessionId = ses.sessionId;
             _t.session.chId = ses.attribute.ch_id;
             _t.session.uid = ses.uid;
+            _t.session.token = ses.token;
             _t.trigger('open', [ _t.session ]);
         },
         _onClose: function(error) {
