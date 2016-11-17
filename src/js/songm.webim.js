@@ -91,13 +91,15 @@
             sessionId: {type: 'string', requisite: false},
             tokenId  : {type: 'string', requisite: true},
             uid      : {type: 'string', requisite: false},
-            chId     : {type: 'string', requisite: false}
+            chId     : {type: 'string', requisite: false},
+            token    : {type: 'object', requisite: false}
         });
 
         this.sessionId = ops.sessionId;
         this.tokenId = ops.tokenId;
         this.uid = ops.uid;
         this.chId = ops.chId;
+        this.token = ops.token;
     };
     
     webim.Message = function(ops) {

@@ -37,6 +37,7 @@
             _this.status = Channel.CONNECTED;
             _this.session = new webim.Session(data);
             if (_this.onConnected) {
+                // 开启心跳定时器
                 _this.heartbeat.start();
                 _this.onConnected(ev, data);
             }
@@ -44,6 +45,7 @@
         _this.bind('disconnected', function(ev, data) {
             _this.status = Channel.DISCONNECTED;
             if (_this.onDisconnected) {
+                // 停止心跳定时器
                 _this.heartbeat.stop();
                 _this.onDisconnected(ev, data);
             }
@@ -82,12 +84,12 @@
             
             var _t = this;
             // 心跳定时任务
-            this.heartbeat ＝ {
+            this.heartbeat = {
                 _interval: null,
                 start: function() {
                     this.stop();
                     this._interval = setInterval(function() {
-                        _this.ws.send(JSON.stringify(
+                        _t.ws.send(JSON.stringify(
                             new webim.Protocol({
                                 op: webim.operation.HEARTBEAT
                             })));
