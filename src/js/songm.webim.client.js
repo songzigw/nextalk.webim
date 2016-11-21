@@ -169,11 +169,9 @@
             if (_this.connStatus != webim.connStatus.CONNECTED) {
                 _this.connStatus = webim.connStatus.CONNECTED;
                 _this.connectedTimes++;
-                _this.session.sessionId = data.sessionId;
-                _this.session.tokenId = data.tokenId;
-                _this.session.uid = data.uid;
-                _this.session.chId = data.chId;
+                _this.session = data;
                 
+                // 连接成功后如何做
                 // ???
                 
                 _this.connStatusListener.onConnected(data);
