@@ -98,13 +98,15 @@
      */
     Conversation.prototype.save = function(msg) {
         msg = new webim.Message(msg);
-        
+        this.record[this.record.length] = msg;
     };
     /**
      * 读取未读消息
      */
     Conversation.prototype.read = function() {
-        
+        var rec = this.record;
+        this.record = [];
+        return rec;
     };
 
     webim.Conversation = Conversation;
