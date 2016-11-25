@@ -119,12 +119,14 @@
         }
         return null;
     };
-    Client.prototype.setCove = function(conv) {
-        if (getConv(conv.type, conv.subject,
-                conv.objectum)) {
-            return;
+    Client.prototype.setConv = function(conv) {
+        conv = new webim.Conversation(conv);
+        var c = getConv(conv.type, conv.subjectum, conv.objectum);
+        if (c) {
+            return c;
         }
         convList[convList.length] = conv;
+        return conv;
     };
     
     /**
@@ -152,7 +154,12 @@
         };
         // 消息接收监听器
         _this.receiveMsgListener = {
-            onDialogue : function(data) {}
+            // 对话
+            onDialogue : function(data) {},
+            // 在线状态
+            onPresence : function(data) {},
+            // 未读消息数
+            onUnread : function(data) {}
         };
 
         // 正在连接
@@ -189,7 +196,8 @@
         _this.bind("message", function(ev, data) {
             console.log("message: " + JSON.stringify(data));
             
-            // ???
+            var c = _this.set(webim.Conversation.msgToConv(data));
+            c.save(data);
             
             _this.receiveMsgListener.onDialogue(data);
         });

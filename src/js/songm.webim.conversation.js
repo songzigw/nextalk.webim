@@ -16,7 +16,7 @@
             type      : {type : [Conversation.PRIVATE,
                                  Conversation.GROUP,
                                  Conversation.NOTICE],
-                         requisite : false},
+                         requisite : true},
             subjectum : {type : 'string', requisite : true},
             subNick   : {type : 'string', requisite : true},
             subAvatar : {type : 'string', requisite : true},
@@ -26,7 +26,7 @@
             direction : {type : [webim.direction.SEND,
                                  webim.direction.RECEIVE],
                          requisite : true},
-            body      : {type : 'string', requisite : true}
+            body      : {type : 'string', requisite : false}
         });
 
         options = songm.util.extend({},
@@ -67,6 +67,30 @@
     Conversation.DEFAULTS = {
         type: Conversation.PRIVATE,
         direction: webim.direction.SEND
+    };
+    Conversation.msgToConv = function(msg) {
+        var conv = {
+            type : msg.conv,
+            direction : msg.direction,
+            body : 'Information'
+        };
+        if (msg.direction == webim.direction.SEND) {
+            conv.subjectum = msg.from;
+            conv.subNick = msg.fNick;
+            conv.subAvatar = msg.fAvatar;
+            conv.objectum = msg.to;
+            conv.objNick = msg.tNick;
+            conv.objAvatar = msg.tAvatar;
+        } else {
+            conv.subjectum = msg.to;
+            conv.subNick = msg.tNick;
+            conv.subAatar = msg.tAvatar;
+            conv.objectum = msg.from;
+            conv.objNick = msg.fNick;
+            conv.objAvatar = msg.fAvatar;
+        }
+        
+        return new Conversation(conv);
     };
 
     /**

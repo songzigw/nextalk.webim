@@ -36,23 +36,34 @@
         _this.bind('connected', function(ev, data) {
             _this.status = Channel.CONNECTED;
             _this.session = new webim.Session(data);
+            // 开启心跳定时器
+            _this.heartbeat.start();
             if (_this.onConnected) {
-                // 开启心跳定时器
-                _this.heartbeat.start();
                 _this.onConnected(ev, data);
             }
         });
         _this.bind('disconnected', function(ev, data) {
             _this.status = Channel.DISCONNECTED;
+            // 停止心跳定时器
+            _this.heartbeat.stop();
             if (_this.onDisconnected) {
-                // 停止心跳定时器
-                _this.heartbeat.stop();
                 _this.onDisconnected(ev, data);
             }
         });
         _this.bind('message', function(ev, data) {
             if (_this.onMessage) {
-                _this.onMessage(ev, data);
+                var msg = new webim.Message({
+                    conv : data.conv,
+                    type : data.type,
+                    from : data.from,
+                    fNick: data.fNick,
+                    fAvatar : data.fAvatar,
+                    to : data.to,
+                    tNick : data.tNick,
+                    tAvatar : data.tAvatar,
+                    body : data.body
+                });
+                _this.onMessage(ev, msg);
             }
         });
     };
