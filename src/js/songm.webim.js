@@ -16,12 +16,12 @@
     webim.operation = {
         // 连接授权
         CONN_AUTH: 1,
-        // 收到服务器端的消息
-        MESSAGE: 3,
-        // 发送消息到服务器端
-        MSG_SEND: 4,
         // 心跳
-        HEARTBEAT: 5
+        HEARTBEAT: 3,
+        // 发布消息到服务器端
+        PUBLISH_MSG: 4,
+        // 收到服务器端的消息
+        BROKER_MSG: 5
     };
     
     /** 各种异常 */

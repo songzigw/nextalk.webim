@@ -79,12 +79,11 @@
         songm.ajax(info);
     };
     
-    var methods = {
+    songm.util.extend(WebAPI.prototype, {
         message: function(params, callback) {
             this._ajax("polling/message", params, callback);
         }
-    };
-    songm.util.extend(WebAPI.prototype, methods);
+    });
 
     webim.WebAPI = WebAPI;
 })((function() {

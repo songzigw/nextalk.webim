@@ -14,7 +14,7 @@
         // 入参验证
         songm.util.validate(options, {
             wsocket  : {type : 'string', requisite : true},
-            server   : {type : 'string', requisite : true},
+            httpd   : {type : 'string', requisite : true},
             tokenId  : {type : 'string', requisite : true},
             type     : {type : [Channel.type.XHR_POLLING,
                                 Channel.type.WEBSOCKET],
@@ -142,16 +142,16 @@
                         _this.trigger('connected', [ ses ]);
                     }
                     break;
-                case webim.operation.MESSAGE:
+                case webim.operation.BROKER_MSG:
                     _this.trigger('message', [ body.data ]);
                     break;
                 case webim.operation.HEARTBEAT:
                     break;
                 default:
-                    _this.trigger('response' + pro.seq, [ body ]);
-                    _this.unbind('response' + pro.seq);
+                    _this.trigger('response_' + pro.seq, [ body ]);
                     break;
                 }
+                _this.unbind('response_' + pro.seq);
             };
             return _this.ws;
         },
@@ -159,7 +159,7 @@
         _newComet : function() {
             var _this = this, ops = _this.options;
 
-            _this.comet = new Comet(ops.server + '/polling/long', _this.session);
+            _this.comet = new Comet(ops.httpd + '/polling/long', _this.session);
             // 注册长连接的事件监听器
             _this.comet.bind('open', function(ev, data) {
                 _this.trigger("connected", [ data ]);
@@ -220,7 +220,7 @@
             }
             pro = new webim.Protocol(pro);
             if (_this.type == Channel.type.WEBSOCKET) {
-                _this.bind('response' + pro.seq, function(ev, ret) {
+                _this.bind('response_' + pro.seq, function(ev, ret) {
                     if (ret.succeed) {
                         if (!ret.data) {
                             ret.data = {};
@@ -234,7 +234,7 @@
             } else if (_this.type == Channel.type.XHR_POLLING) {
                 var api = webim.WebAPI.getInstance();
                 switch (pro.op) {
-                case webim.operation.MSG_SEND:
+                case webim.operation.PUBLISH_MSG:
                     api.message({
                         session: _this.session.sessionId,
                         chId   : _this.session.chId,

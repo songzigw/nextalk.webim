@@ -64,7 +64,7 @@
             // 通信令牌
             token       : {type : 'string', requisite : true},
             wsocket     : {type : 'string', requisite : true},
-            server      : {type : 'string', requisite : true},
+            httpd      : {type : 'string', requisite : true},
             channelType : {type : [webim.Channel.type.XHR_POLLING,
                                    webim.Channel.type.WEBSOCKET],
                            requisite : false},
@@ -77,7 +77,7 @@
 
         // 初始化Web业务服务API
         webim.WebAPI.init({
-            apiPath : options.server
+            apiPath : options.httpd
         });
 
         // 初始化
@@ -219,7 +219,7 @@
         _this.trigger("connecting", [ _this.session ]);
         // 创建通信管道
         _this.channel = new webim.Channel({wsocket: options.wsocket,
-                                     server: options.server,
+                                     httpd: options.httpd,
                                      tokenId: options.token,
                                      sessionId: options.session,
                                      type: options.channelType});
@@ -238,6 +238,7 @@
         // 发起管道连接
         _this.channel.connect();
     };
+    
     /** 断开服务器 */
     Client.prototype.disconnectServer = function() {
         var _t = this;
@@ -245,7 +246,9 @@
             _t.channel.disconnect();
         }
     };
+    
     /** 发送消息 */
+    // var callback = function(ret, err) {};
     Client.prototype.sendMessage = function(msg, callback) {
         var _t = this;
         
@@ -255,7 +258,7 @@
         }
         
         _t.channel.sendMessage(new webim.Protocol({
-            op: webim.operation.MSG_SEND,
+            op: webim.operation.PUBLISH_MSG,
             body: new webim.Message(msg)
         }), callback);
     };
