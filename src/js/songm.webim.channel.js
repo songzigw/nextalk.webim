@@ -134,7 +134,7 @@
                                 token    : ret.token}
                      _this.trigger('connected', [ ses ]);
                     } else {
-                        consloe.log(JSON.stringify(err));
+                        console.log(JSON.stringify(err));
                         _this.ws.close();
                     }
                 });
@@ -215,7 +215,8 @@
         sendMessage : function(pro, callback) {
             var _this = this;
 
-            if (_this.status != Channel.CONNECTED) {
+            if (_this.status != Channel.CONNECTED
+                    && pro.op != webim.operation.CONN_AUTH) {
                 callback(undefined, webim.error.CONNECT);
                 return;
             }
@@ -320,7 +321,7 @@
             }
             
             if (!d.succeed) {
-                _t._onClose({errorCode: d.errorCode, errorDesc: '连接错误'});
+                _t._onClose({errorCode: d.errorCode, errorDesc: d.errorDesc});
                 return;
             }
             // 第一次轮询
