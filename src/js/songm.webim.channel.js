@@ -76,7 +76,7 @@
     Channel.type = {};
     (function(type) {
         type.XHR_POLLING = "XHR_POLLING";
-        type.WEBSOCKET = "WEBSOCKET";
+        type.WEBSOCKET   = "WEBSOCKET";
     })(Channel.type);
     
     Channel.DEFAULTS = {
@@ -99,12 +99,17 @@
                 _interval: null,
                 start: function() {
                     this.stop();
-                    this._interval = setInterval(function() {
-                        _t.ws.send(JSON.stringify(
-                            new webim.Protocol({
-                                op: webim.operation.HEARTBEAT
-                            })));
-                    }, 30 * 1000);
+                    this._interval = setInterval(
+                        function() {
+                            _t.sendMessage(new webim.Protocol({
+                                op : webim.operation.HEARTBEAT,
+                                body : ["ping"]
+                            }),
+                            function(ret, err) {
+                                console.log(JSON.stringify(ret));
+                            });
+                        },
+                        30 * 1000);
                 },
                 stop: function() {
                     clearInterval(this._interval);
@@ -118,37 +123,33 @@
 
             _this.ws.onopen = function(ev) {
                 // 连接授权
-                _this.ws.send(JSON.stringify(
-                        new webim.Protocol({
-                            op: webim.operation.CONN_AUTH,
-                            body: _this.session
-                        })));
+                _this.sendMessage(new webim.Protocol({
+                    op: webim.operation.CONN_AUTH,
+                    body: _this.session
+                }), function(ret, err) {
+                    if (ret) {
+                        var ses = {sessionId: ret.sessionId,
+                                tokenId  : ret.tokenId,
+                                uid      : ret.uid,
+                                token    : ret.token}
+                     _this.trigger('connected', [ ses ]);
+                    } else {
+                        consloe.log(JSON.stringify(err));
+                        _this.ws.close();
+                    }
+                });
             };
             _this.ws.onclose = function(ev) {
                 _this.trigger('disconnected', [ ev.data ]);
             };
             _this.ws.onmessage = function(ev) {
                 var pro = JSON.parse(ev.data);
-                var body = pro.body;
                 switch (pro.op) {
-                case webim.operation.CONN_AUTH:
-                    if (!body.succeed) {
-                        _this.ws.close();
-                    } else {
-                        var ses = {sessionId: body.data.sessionId,
-                                   tokenId  : body.data.tokenId,
-                                   uid      : body.data.uid,
-                                   token    : body.data.token}
-                        _this.trigger('connected', [ ses ]);
-                    }
-                    break;
                 case webim.operation.BROKER_MSG:
-                    _this.trigger('message', [ body.data ]);
-                    break;
-                case webim.operation.HEARTBEAT:
+                    _this.trigger('message', [ pro.body ]);
                     break;
                 default:
-                    _this.trigger('response_' + pro.seq, [ body ]);
+                    _this.trigger('response_' + pro.seq, [ pro.body ]);
                     break;
                 }
                 _this.unbind('response_' + pro.seq);
@@ -221,6 +222,10 @@
             pro = new webim.Protocol(pro);
             if (_this.type == Channel.type.WEBSOCKET) {
                 _this.bind('response_' + pro.seq, function(ev, ret) {
+                    if (ret.succeed == undefined) {
+                        callback(ret, undefined);
+                        return;
+                    }
                     if (ret.succeed) {
                         if (!ret.data) {
                             ret.data = {};
