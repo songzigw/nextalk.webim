@@ -84,7 +84,7 @@
         } else {
             conv.subjectum = msg.to;
             conv.subNick = msg.tNick;
-            conv.subAatar = msg.tAvatar;
+            conv.subAvatar = msg.tAvatar;
             conv.objectum = msg.from;
             conv.objNick = msg.fNick;
             conv.objAvatar = msg.fAvatar;
