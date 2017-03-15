@@ -14,7 +14,7 @@
         // 入参验证
         songm.util.validate(options, {
             wsocket  : {type : 'string', requisite : true},
-            httpd   : {type : 'string', requisite : true},
+            httpd    : {type : 'string', requisite : true},
             tokenId  : {type : 'string', requisite : true},
             type     : {type : [Channel.type.XHR_POLLING,
                                 Channel.type.WEBSOCKET],
@@ -131,7 +131,8 @@
                         var ses = {sessionId: ret.sessionId,
                                 tokenId  : ret.tokenId,
                                 uid      : ret.uid,
-                                token    : ret.token}
+                                token    : ret.token,
+                                chId     : ret.attribute.ch_id}
                      _this.trigger('connected', [ ses ]);
                     } else {
                         console.log(JSON.stringify(err));
