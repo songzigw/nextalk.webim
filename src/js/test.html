@@ -11,13 +11,40 @@
 <script type="text/javascript" src="songm.webim.conversation.js"></script>
 <script type="text/javascript" src="songm.webim.client.js"></script>
 <script type="text/javascript">
-var client = new songm.webim.Client({token:'MAXMAYYEBOLHEI3V', wsocket:'ws://127.0.0.1:17182', httpd:'http://127.0.0.1:17183'});
+var client = null;
+window.onload = function() {
+    document.getElementById("btn_conn").onclick = function() {
+        var token = document.getElementById('inp_token').value;
+        alert(token);
+        client = new songm.webim.Client({
+            token:token,
+            wsocket:'ws://127.0.0.1:17182',
+            httpd:'http://127.0.0.1:17183'});
+        client.setConnStatusListener({
+            onConnecting : function(data) {
+                
+            },
+            onConnected : function(data) {
+                document.getElementById('content').innerHTML = JSON.stringify(data);
+            },
+            onDisconnected : function(data) {
+                
+            }
+        });
+        client.connectServer();
+    }
+};
 </script>
 <style type="text/css">
 
 </style>
 </head>
 <body>
-
+<div>
+<label>请输入通信令牌</label>
+<input type="text" id="inp_token" />
+<button type="button" id="btn_conn">连接聊天服务器</button>
+</div>
+<div id="content"></div>
 </body>
 </html>

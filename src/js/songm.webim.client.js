@@ -178,8 +178,7 @@
                 _this.connectedTimes++;
                 _this.session = data;
                 
-                // 连接成功后如何做
-                // ???
+                // 连接成功后如何做???
                 
                 _this.connStatusListener.onConnected(data);
             }
@@ -257,6 +256,7 @@
             return;
         }
         
+        msg.chId = _t.session.chId;
         _t.channel.sendMessage(new webim.Protocol({
             op: webim.operation.PUBLISH_MSG,
             body: new webim.Message(msg)

@@ -112,28 +112,30 @@
             type   : {type : [webim.Message.TEXT,
                               webim.Message.IMAGE],
                       requisite : true},
+            chId   : {type : 'string', requisite : true},
             from   : {type : 'string', requisite : true},
             fNick  : {type : 'string', requisite : true},
             fAvatar: {type : 'string', requisite : true},
             to     : {type : 'string', requisite : true},
             tNick  : {type : 'string', requisite : true},
             tAvatar: {type : 'string', requisite : true},
-            body   : {type : 'string', requisite : true}
+            jbody  : {type : 'string', requisite : true}
         });
         
         // 会话类型
         this.conv = ops.conv;
         this.type = ops.type;
+        this.chId = ops.chId;
         this.from = ops.from;
         this.fNick = ops.fNick;
         this.fAvatar = ops.fAvatar;
         this.to = ops.to;
         this.tNick = ops.tNick;
         this.tAvatar = ops.tAvatar;
-        this.body = ops.body;
+        this.jbody = ops.jbody;
     };
-    webim.Message.TEXT  = 'TEXT';
-    webim.Message.IMAGE = 'IMAGE';
+    webim.Message.TEXT  = 'text';
+    webim.Message.IMAGE = 'image';
     
 })((function() {
     if (!window.songm) {

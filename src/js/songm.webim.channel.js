@@ -39,7 +39,7 @@
             // 开启心跳定时器
             _this.heartbeat.start();
             if (_this.onConnected) {
-                _this.onConnected(ev, data);
+                _this.onConnected(ev, _this.session);
             }
         });
         _this.bind('disconnected', function(ev, data) {
@@ -55,6 +55,7 @@
                 var msg = new webim.Message({
                     conv : data.conv,
                     type : data.type,
+                    chId : data.chId,
                     from : data.from,
                     fNick: data.fNick,
                     fAvatar : data.fAvatar,
@@ -106,7 +107,7 @@
                                 body : ["ping"]
                             }),
                             function(ret, err) {
-                                console.log(JSON.stringify(ret));
+                                // console.log(JSON.stringify(ret));
                             });
                         },
                         30 * 1000);
@@ -131,17 +132,18 @@
                         var ses = {sessionId: ret.sessionId,
                                 tokenId  : ret.tokenId,
                                 uid      : ret.uid,
-                                token    : ret.token,
-                                chId     : ret.attribute.ch_id}
+                                chId     : ret.attribute.ch_id,
+                                token    : ret.token}
                      _this.trigger('connected', [ ses ]);
                     } else {
-                        console.log(JSON.stringify(err));
+                        _this.error = err;
                         _this.ws.close();
                     }
                 });
             };
             _this.ws.onclose = function(ev) {
-                _this.trigger('disconnected', [ ev.data ]);
+                _this.trigger('disconnected', [ _this.error ]);
+                _this.error = undefined;
             };
             _this.ws.onmessage = function(ev) {
                 var pro = JSON.parse(ev.data);
@@ -161,7 +163,7 @@
         _newComet : function() {
             var _this = this, ops = _this.options;
 
-            _this.comet = new Comet(ops.httpd + '/polling/long', _this.session);
+            _this.comet = new Comet(ops.httpd + '/jsonp/polling', _this.session);
             // 注册长连接的事件监听器
             _this.comet.bind('open', function(ev, data) {
                 _this.trigger("connected", [ data ]);
@@ -322,7 +324,7 @@
             }
             
             if (!d.succeed) {
-                _t._onClose({errorCode: d.errorCode, errorDesc: d.errorDesc});
+                _t._onClose(d);
                 return;
             }
             // 第一次轮询
