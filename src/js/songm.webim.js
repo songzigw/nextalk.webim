@@ -113,6 +113,7 @@
                               webim.Message.IMAGE],
                       requisite : true},
             chId   : {type : 'string', requisite : true},
+            direction: {type : 'string', requisite : true},
             from   : {type : 'string', requisite : true},
             fNick  : {type : 'string', requisite : true},
             fAvatar: {type : 'string', requisite : true},
@@ -126,6 +127,7 @@
         this.conv = ops.conv;
         this.type = ops.type;
         this.chId = ops.chId;
+        this.direction = ops.direction;
         this.from = ops.from;
         this.fNick = ops.fNick;
         this.fAvatar = ops.fAvatar;

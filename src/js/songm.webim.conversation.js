@@ -26,7 +26,10 @@
             direction : {type : [webim.direction.SEND,
                                  webim.direction.RECEIVE],
                          requisite : true},
-            body      : {type : 'string', requisite : false}
+            timestamp : {type : 'number', requisite : false},
+            body      : {type : 'string', requisite : false},
+            unreadCount: {type : 'number', requisite : false},
+            record    : {type : 'object', requisite : false}
         });
 
         options = songm.util.extend({},
@@ -52,7 +55,6 @@
         
         // 未读消息数
         this.unreadCount = 0;
-        
         // 未读消息记录
         this.record = [];
     };
@@ -72,7 +74,7 @@
         var conv = {
             type : msg.conv,
             direction : msg.direction,
-            body : 'Information'
+            body : msg.jbody
         };
         if (msg.direction == webim.direction.SEND) {
             conv.subjectum = msg.from;

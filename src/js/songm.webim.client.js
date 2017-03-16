@@ -119,13 +119,14 @@
         }
         return null;
     };
-    Client.prototype.setConv = function(conv) {
-        conv = new webim.Conversation(conv);
-        var c = getConv(conv.type, conv.subjectum, conv.objectum);
+    Client.prototype.setConv = function(msg) {
+        var _t = this, conv = webim.Conversation.msgToConv(msg);
+        // conv = new webim.Conversation(conv);
+        var c = _t.getConv(conv.type, conv.subjectum, conv.objectum);
         if (c) {
             return c;
         }
-        convList[convList.length] = conv;
+        _t.convList[_t.convList.length] = conv;
         return conv;
     };
     
@@ -195,9 +196,8 @@
         _this.bind("message", function(ev, data) {
             console.log("message: " + JSON.stringify(data));
             
-            var c = _this.set(webim.Conversation.msgToConv(data));
-            c.save(data);
-            
+            // 对话消息
+            _this.setConv(data).save(data);
             _this.receiveMsgListener.onDialogue(data);
         });
     };
@@ -257,6 +257,7 @@
         }
         
         msg.chId = _t.session.chId;
+        msg.direction = webim.direction.SEND;
         _t.channel.sendMessage(new webim.Protocol({
             op: webim.operation.PUBLISH_MSG,
             body: new webim.Message(msg)

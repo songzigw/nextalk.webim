@@ -55,6 +55,7 @@
                 var msg = new webim.Message({
                     conv : data.conv,
                     type : data.type,
+                    direction: data.direction,
                     chId : data.chId,
                     from : data.from,
                     fNick: data.fNick,
@@ -62,7 +63,7 @@
                     to : data.to,
                     tNick : data.tNick,
                     tAvatar : data.tAvatar,
-                    body : data.body
+                    jbody : data.jbody
                 });
                 _this.onMessage(ev, msg);
             }
