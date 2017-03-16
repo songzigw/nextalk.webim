@@ -195,10 +195,15 @@
         // 接收消息
         _this.bind("message", function(ev, data) {
             console.log("message: " + JSON.stringify(data));
+            var _t = this;
+            if (_t.session.chId != data.chId
+                    && webim.Message.TEXT == data.type
+                    || webim.Message.IMAGE == data.type) {
+                // 对话消息
+                _this.setConv(data).save(data);
+                _this.receiveMsgListener.onDialogue(data);
+            }
             
-            // 对话消息
-            _this.setConv(data).save(data);
-            _this.receiveMsgListener.onDialogue(data);
         });
     };
     /** 定义或开启部分定时任务 */
