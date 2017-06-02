@@ -14,8 +14,7 @@
         // 入参验证
         songm.util.validate(options, {
             type      : {type : [Conversation.PRIVATE,
-                                 Conversation.GROUP,
-                                 Conversation.NOTICE],
+                                 Conversation.GROUP],
                          requisite : true},
             subjectum : {type : 'string', requisite : true},
             subNick   : {type : 'string', requisite : true},
@@ -64,13 +63,12 @@
     Conversation.PRIVATE = 'private';
     // 群聊
     Conversation.GROUP = 'group';
-    // 通知
-    Conversation.NOTICE = 'notice';
     Conversation.DEFAULTS = {
         type: Conversation.PRIVATE,
         direction: webim.direction.SEND
     };
     Conversation.msgToConv = function(msg) {
+        msg = new webim.Message(msg);
         var conv = {
             type : msg.conv,
             direction : msg.direction,
@@ -101,6 +99,7 @@
     Conversation.prototype.save = function(msg) {
         msg = new webim.Message(msg);
         this.record[this.record.length] = msg;
+        this.unreadCount++;
     };
     /**
      * 读取未读消息
@@ -108,6 +107,7 @@
     Conversation.prototype.read = function() {
         var rec = this.record;
         this.record = [];
+        this.unreadCount = 0;
         return rec;
     };
 

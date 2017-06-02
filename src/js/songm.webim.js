@@ -106,13 +106,13 @@
         // 入参验证
         songm.util.validate(ops, {
             conv   : {type : [webim.Conversation.PRIVATE,
-                              webim.Conversation.GROUP,
-                              webim.Conversation.NOTICE],
+                              webim.Conversation.GROUP],
                       requisite : true},
             type   : {type : [webim.Message.TEXT,
-                              webim.Message.IMAGE],
+                              webim.Message.IMAGE,
+                              webim.Message.UNREAD],
                       requisite : true},
-            chId   : {type : 'string', requisite : true},
+            chId   : {type : 'string', requisite : false},
             direction:{type : [webim.direction.SEND,
                                webim.direction.RECEIVE],
                        requisite : true},
@@ -140,6 +140,7 @@
     };
     webim.Message.TEXT  = 'text';
     webim.Message.IMAGE = 'image';
+    webim.Message.UNREAD = 'unread';
     
 })((function() {
     if (!window.songm) {

@@ -111,17 +111,16 @@
     Client.prototype.getConv = function(type, sub, obj) {
         var _t = this;
         for (var i = 0; i < _t.convList.length; i++) {
-            if (_t[i].type == type
-                    && _t[i].subjectum == sub
-                    && _t[i].objectum == obj) {
-                return _t[i];
+            if (_t.convList[i].type == type
+                    && _t.convList[i].subjectum == sub
+                    && _t.convList[i].objectum == obj) {
+                return _t.convList[i];
             }
         }
         return null;
     };
     Client.prototype.setConv = function(msg) {
         var _t = this, conv = webim.Conversation.msgToConv(msg);
-        // conv = new webim.Conversation(conv);
         var c = _t.getConv(conv.type, conv.subjectum, conv.objectum);
         if (c) {
             return c;
@@ -154,13 +153,8 @@
              onDisconnected : function(data) {}
         };
         // 消息接收监听器
-        _this.receiveMsgListener = {
-            // 对话
-            onDialogue : function(data) {},
-            // 在线状态
-            onPresence : function(data) {},
-            // 未读消息数
-            onUnread : function(data) {}
+        _this.onReceiveMessage = function(data) {
+            console.log("message: " + JSON.stringify(data));
         };
 
         // 正在连接
@@ -194,14 +188,10 @@
         });
         // 接收消息
         _this.bind("message", function(ev, data) {
-            console.log("message: " + JSON.stringify(data));
             var _t = this;
-            if (_t.session.chId != data.chId
-                    && webim.Message.TEXT == data.type
-                    || webim.Message.IMAGE == data.type) {
-                // 对话消息
+            if (_t.session.chId != data.chId) {
                 _this.setConv(data).save(data);
-                _this.receiveMsgListener.onDialogue(data);
+                _this.onReceiveMessage(data);
             }
             
         });
@@ -263,9 +253,9 @@
         
         msg.chId = _t.session.chId;
         msg.direction = webim.direction.SEND;
+        _t.setConv(msg);
         _t.channel.sendMessage(new webim.Protocol({
-            op: webim.operation.PUBLISH_MSG,
-            body: new webim.Message(msg)
+            op: webim.operation.PUBLISH_MSG, body: msg
         }), callback);
     };
     
