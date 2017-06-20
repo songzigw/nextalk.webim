@@ -72,7 +72,7 @@
         var conv = {
             type : msg.conv,
             direction : msg.direction,
-            body : msg.jbody
+            body : JSON.stringify(msg.jbody)
         };
         if (msg.direction == webim.direction.SEND) {
             conv.subjectum = msg.from;

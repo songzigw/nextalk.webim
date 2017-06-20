@@ -99,19 +99,20 @@
             // 心跳定时任务
             this.heartbeat = {
                 _interval: null,
+                _bounce: function() {
+                    _t.sendMessage(new webim.Protocol({
+                        op : webim.operation.HEARTBEAT,
+                        body : ["ping"]
+                    }),
+                    function(ret, err) {
+                        // console.log(JSON.stringify(ret));
+                    });
+                },
                 start: function() {
                     this.stop();
+                    this._bounce();
                     this._interval = setInterval(
-                        function() {
-                            _t.sendMessage(new webim.Protocol({
-                                op : webim.operation.HEARTBEAT,
-                                body : ["ping"]
-                            }),
-                            function(ret, err) {
-                                // console.log(JSON.stringify(ret));
-                            });
-                        },
-                        30 * 1000);
+                        this._bounce, 30 * 1000);
                 },
                 stop: function() {
                     clearInterval(this._interval);

@@ -122,7 +122,7 @@
             to     : {type : 'string', requisite : true},
             tNick  : {type : 'string', requisite : true},
             tAvatar: {type : 'string', requisite : true},
-            jbody  : {type : 'string', requisite : true}
+            jbody  : {type : 'object', requisite : true}
         });
         
         // 会话类型
